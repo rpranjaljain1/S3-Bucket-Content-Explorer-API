@@ -49,7 +49,12 @@ https://54.158.30.21:5000/list-bucket-content/dir2
 
 
 ![image](https://github.com/user-attachments/assets/337106f8-c1b1-40b2-b16a-c94937e39eb6)
-Handling error for non-existing paths
+Handling error for non-existing paths like https://54.158.30.21:5000/list-bucket-content/directory-unknown
+
+
+
+![image](https://github.com/user-attachments/assets/851650ca-4584-4357-93f2-eea9ac224ff5)
+Added self signed certificate to deploy the service on HTTPS
 
 
 
