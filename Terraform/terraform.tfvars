@@ -1,0 +1,5 @@
+instance_type    = "t2.micro"                
+# security_group_id = "sg-0b92ee61e55ff73a5"   
+iam_role_name     = "EC2RoleForSSM"           
+bucket_name = "api-call-1234567890f"
+vpc_id = "vpc-09c97a20fc9b3cb61"
