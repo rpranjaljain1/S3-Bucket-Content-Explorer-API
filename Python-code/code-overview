@@ -1,0 +1,112 @@
+
+This code defines a **Flask application** that interacts with an AWS S3 bucket. It provides an API endpoint to list the contents of the bucket, either at the top level or under a specified prefix. Here's a detailed explanation of the key parts:
+
+1. First, we import the necessary modules:
+    - 'Flask' is imported to build a web application.
+    - 'jsonify' is imported to easily return JSON responses from our API.
+    - 'boto3' is the AWS SDK for Python, which we'll use to interact with AWS services, specifically S3 in this case.
+    - 'NoCredentialsError' and 'PartialCredentialsError' are specific exceptions from 'botocore' to handle AWS credential issues.
+    """
+    from flask import Flask, jsonify
+    import boto3
+    from botocore.exceptions import NoCredentialsError, PartialCredentialsError
+
+"""
+2. Next, we create an instance of the Flask application using the 'Flask' class.
+This instance will allow us to define routes and run our web server.
+"""
+app = Flask(**name**)
+
+"""
+3. We now define some basic AWS configuration details:
+
+- 'AWS_REGION' specifies the AWS region where our S3 bucket is hosted.
+- 'BUCKET_NAME' is the name of the S3 bucket we want to interact with.
+"""
+AWS_REGION = "us-east-1"
+BUCKET_NAME = "api-calls-1234"
+
+"""
+4. Using 'boto3', we initialize an S3 client to interact with the S3 service.
+The 'region_name' parameter ensures the client operates in the specified AWS region.
+"""
+s3_client = boto3.client('s3', region_name=AWS_REGION)
+
+"""
+5. We define a helper function called 'list_s3_objects'.
+This function accepts an optional 'prefix' parameter, which acts like a folder path in the bucket.
+It lists objects in the bucket and separates them into 'directories' and 'files'.
+"""
+def list_s3_objects(prefix=''):
+"""
+6. Inside the function, we start by trying to list objects in the bucket using the provided 'prefix'.
+The 'list_objects_v2' method is called on the S3 client.
+"""
+try:
+response = s3_client.list_objects_v2(Bucket=BUCKET_NAME, Prefix=prefix)
+
+### **1. Checking for Contents in the Response**
+
+*"First, the function starts by checking if the key `'Contents'` exists in the response from the S3 API. The `'Contents'` key contains a list of objects that match the given prefix. If this key is missing or the list is empty, it means there are no objects in the bucket that match the prefix provided. In such cases, the function raises a `FileNotFoundError`, informing the user that no objects were found for the given prefix. This ensures that the function exits gracefully when no data is available to process."*
+
+---
+
+### **2. Preparing to Categorize Objects**
+
+*"Next, the function initializes two containers: a `set` called `directories` and a `list` called `files`. The `directories` set is used because directories may repeat across different objects, and a set automatically eliminates duplicates. The `files` list, on the other hand, is used to store file names as they are encountered."*
+
+---
+
+### **3. Iterating Through Objects**
+
+*"The function then loops through each object in the `'Contents'` list. Every object has a key, which is essentially its full path in the bucket. To work with the object's name relative to the prefix, the prefix length is subtracted from the key. If the resulting name is empty, it means the key matches the prefix exactly (like a folder marker), and such entries are skipped to avoid unnecessary processing."*
+
+---
+
+### **4. Determining Files vs. Directories**
+
+*"For each remaining key, the function checks if it represents a directory or a file. This is done by splitting the key using the forward slash (`/`) as a delimiter. If the split results in more than one part, it means the key contains a directory structure, and the first part (the directory name) is added to the `directories` set. Otherwise, the key is treated as a file, and its name is added to the `files` list."*
+
+---
+
+### **5. Returning the Categorized Data**
+
+*"Once the loop completes, the function consolidates the directories and files into a dictionary. The `directories` set is converted to a list for consistency before returning it alongside the `files` list. This dictionary provides a structured view of the bucket’s contents, neatly separated into directories and files."*
+
+---
+
+### **6. Handling Exceptions**
+
+*"The function is designed with robust error handling to account for common issues during S3 interactions. If no AWS credentials are configured, a `NoCredentialsError` is caught, and an appropriate exception is raised. Similarly, if credentials are incomplete, a `PartialCredentialsError` is handled. For any unexpected issues, a generic exception is raised with the error message, ensuring that the user is informed about what went wrong."*
+
+"""
+ Next, we define the Flask route '/list-bucket-content/'
+
+When a user wants to explore the bucket's contents, they access an endpoint on the web server. There are two routes available:
+
+1. If they don't specify any path, they hit `/list-bucket-content/`, which takes them to the root of the bucket.
+2. If they want to explore a specific "folder" or prefix, they can include it in the URL, like `/list-bucket-content/my-folder/`.
+
+Both routes are designed to handle **GET** requests, meaning users are simply retrieving information without making any changes.
+
+---
+
+When the request comes in, the app first checks if the user has specified a path (called a "prefix"). If the prefix doesn't end with a `/`, the app adds one to make sure navigation behaves consistently.
+
+Next, the app calls a helper function, `list_s3_objects(prefix)`. This function communicates with the S3 bucket to get a list of files and directories under the specified prefix.
+
+- If the user is at the root (`prefix == ''`), the app assumes they only want to see directories (like the top-level folders).
+- If they're navigating within a folder, the app returns both files and directories so they can see everything available in that path.
+
+---
+
+Now, things don't always go smoothly. The app is prepared for potential errors:
+
+1. If the path or prefix doesn't exist in the bucket, the app raises a `FileNotFoundError` and responds with a `404` error (Not Found).
+2. For any other unexpected issues, the app catches the error and sends back a `500` response (Internal Server Error).
+
+---
+
+Finally, when it's time to run the server, the app starts listening on **port 443** (the default for HTTPS). It's configured to use **self-signed certificates** (`selfsigned.crt` and `selfsigned.key`) so that communication happens over a secure HTTPS connection.
+
+This way, users can safely and conveniently browse the S3 bucket's contents via your web application.
