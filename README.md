@@ -22,3 +22,36 @@ This solution combines Python's efficiency for API development with Terraform's 
 ![image](https://github.com/user-attachments/assets/c1f9eee6-2a8f-4ab7-b793-aab30f93c53f)
 EC2 instance created using terraform on which python code is running
 
+
+
+![image](https://github.com/user-attachments/assets/01d57b98-01ba-4ee4-b370-d436b2240dc0)
+AWS s3 bucket created using terraform having 2 directories dir1 (empty) and dir2 (containing two files)
+
+
+![image](https://github.com/user-attachments/assets/5dce5377-b28b-413a-91c0-8d1870eeed16)
+Contents for dir2
+
+
+
+![image](https://github.com/user-attachments/assets/e8eb40c9-d8ac-4f5d-86da-5a08c6786821)
+Result of https://54.158.30.21:5000/list-bucket-content/
+
+
+
+![image](https://github.com/user-attachments/assets/d3dffea5-5a3c-4888-a899-e561e197b826)
+https://54.158.30.21:5000/list-bucket-content/dir1
+
+
+
+![image](https://github.com/user-attachments/assets/17c5fc07-9194-472e-b56b-9134c34e74a9)
+https://54.158.30.21:5000/list-bucket-content/dir2
+
+
+
+![image](https://github.com/user-attachments/assets/337106f8-c1b1-40b2-b16a-c94937e39eb6)
+Handling error for non-existing paths
+
+
+
+
+
