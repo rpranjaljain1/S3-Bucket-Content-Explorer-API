@@ -58,5 +58,9 @@ Added self signed certificate to deploy the service on HTTPS
 
 
 
+![image](https://github.com/user-attachments/assets/d922026b-752f-4456-8b02-226ae22b5e62)
+GET request 200 and 404 status codes on EC2 server
+
+
 
 
