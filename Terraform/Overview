@@ -1,0 +1,118 @@
+### **Starting with the Security Group Module**
+
+### **`main.tf`**
+
+This file is the blueprint for creating a security group. Let's dissect it step by step:
+
+1. **Defining the Security Group**
+    - A security group resource is created using the `aws_security_group` block.
+    - The `name` and `description` fields label the security group, helping to identify its purpose: managing access to our EC2 instance.
+    - The `vpc_id` connects the security group to a specific Virtual Private Cloud (VPC), provided as an input variable.
+2. **Inbound Rules (`ingress`)**
+    - The first `ingress` block allows SSH access (port 22) from the IP ranges specified in the `allowed_cidr_blocks` variable.
+    - The second block enables access on port 5000, intended for custom applications.
+    - Similarly, blocks for HTTP (port 80) and HTTPS (port 443) ensure web traffic can reach the instance.
+3. **Outbound Rules (`egress`)**
+    - All outbound traffic is allowed to ensure that the instance can connect to external services.
+4. **Tagging**
+    - A `tags` block assigns metadata to the security group for easier management and visibility.
+
+---
+
+### **`variables.tf`**
+
+- This file defines the inputs required for the security group module.
+- Variables like `security_group_name`, `vpc_id`, and `allowed_cidr_blocks` make the module reusable and configurable.
+- The default value for `allowed_cidr_blocks` is set to `"0.0.0.0/0"`, allowing access from anywhere by default (modifiable for security).
+
+---
+
+### **`output.tf`**
+
+- The `output` block shares the `security_group_id`, enabling other modules to use it.
+- This is essential for linking the security group with other resources, like EC2 instances.
+
+---
+
+### **Next, the EC2 Instance Module**
+
+### **`main.tf`**
+
+1. **Linking the Security Group**
+    - The `module` block calls the `security_group` module we just discussed, ensuring the EC2 instance is associated with the right security settings.
+2. **Creating the EC2 Instance**
+    - The `aws_instance` block specifies the instance type (like `t2.micro`), the AMI (Amazon Machine Image) ID, and the security group ID.
+    - An IAM role is attached for managing permissions.
+3. **User Data Script**
+    - A script runs during the instance's first boot:
+        - Updates the operating system.
+        - Installs Python3, pip, and libraries like Flask, Boto3, and Requests.
+        - Verifies installations and logs success messages.
+
+---
+
+### **`variables.tf`**
+
+- Defines inputs like `instance_type`, `ami_id`, `iam_role_name`, and `vpc_id`.
+- These variables ensure flexibility, letting us customize the EC2 instance without altering the core logic.
+
+---
+
+### **`output.tf`**
+
+- Outputs the EC2 instance ID for easy reference.
+- Writes this ID to a local file (`instance_id.txt`), enabling external scripts or users to access it.
+
+---
+
+### **`provider.tf`**
+
+- Configures the AWS provider and sets the region to `us-east-1`.
+
+---
+
+### **Moving to the S3 Bucket Module**
+
+### **`main.tf`**
+
+- The `aws_s3_bucket` block creates a simple S3 bucket.
+- Outputs include the bucket's name and ARN, which are crucial for linking or managing the bucket elsewhere.
+
+---
+
+### **`variable.tf`**
+
+- Defines the `bucket_name` variable, making the module reusable with different bucket names.
+
+---
+
+### **Root Configuration**
+
+### **`main.tf`**
+
+1. **Fetching the AMI ID**
+    - The `data` block retrieves the AMI ID from AWS SSM Parameter Store, ensuring the instance is based on a pre-approved image.
+2. **Calling Modules**
+    - The `ec2-instance` and `s3` modules are invoked, passing necessary inputs like AMI ID and bucket name.
+3. **DynamoDB for State Locking**
+    - A DynamoDB table is created for Terraform state locking, ensuring safe collaboration on the infrastructure.
+
+---
+
+### **`backend.tf`**
+
+- Configures Terraform to store its state in an S3 bucket and use the DynamoDB table for locking.
+- This setup ensures a robust, collaborative environment for managing infrastructure.
+
+---
+
+### **`terraform.tfvars`**
+
+- Provides actual values for variables, such as instance type, IAM role name, bucket name, and VPC ID.
+- This file keeps sensitive or environment-specific details separate from the core code.
+
+---
+
+### **`variables.tf`**
+
+- Collects all input variables for the root module, tying together the EC2 instance, security group, and S3 bucket.
