@@ -17,3 +17,8 @@ Components:
 Python Code: Implements the HTTP service using frameworks like Flask or FastAPI. It uses the AWS SDK for Python (boto3) to interact with S3.
 Terraform Configuration: Manages the infrastructure as code to provision AWS resources, ensuring consistent and reproducible deployments.
 This solution combines Python's efficiency for API development with Terraform's infrastructure automation, providing a scalable and maintainable approach to building and deploying cloud-native services.
+
+
+![image](https://github.com/user-attachments/assets/c1f9eee6-2a8f-4ab7-b793-aab30f93c53f)
+EC2 instance created using terraform on which python code is running
+
