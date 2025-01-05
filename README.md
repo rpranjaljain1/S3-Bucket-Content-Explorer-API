@@ -12,6 +12,8 @@ Flexible Deployment: Terraform scripts are provided to automate the creation of 
 
 
 Components:
+
+
 Python Code: Implements the HTTP service using frameworks like Flask or FastAPI. It uses the AWS SDK for Python (boto3) to interact with S3.
 Terraform Configuration: Manages the infrastructure as code to provision AWS resources, ensuring consistent and reproducible deployments.
 This solution combines Python's efficiency for API development with Terraform's infrastructure automation, providing a scalable and maintainable approach to building and deploying cloud-native services.
